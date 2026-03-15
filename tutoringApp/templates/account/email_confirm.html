@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Confirm Email" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card p-4 text-center">
+            <h2 class="mb-4">{% trans "Confirm Email Address" %}</h2>
+            {% if confirmation %}
+            <p>{% blocktrans with confirmation.email_address.email as email %}Please confirm that <strong>{{ email }}</strong> is your email address.{% endblocktrans %}</p>
+            <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">{% trans "Confirm" %}</button>
+            </form>
+            {% else %}
+            <p class="text-danger">{% trans "This confirmation link has expired or is invalid." %}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

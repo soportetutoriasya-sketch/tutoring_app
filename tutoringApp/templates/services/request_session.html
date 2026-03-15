@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+
+{% block title %}{% trans "Request a Session" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4"><i class="bi bi-calendar-plus me-2"></i>{% trans "Request a Tutoring Session" %}</h1>
+
+        <div class="card p-4">
+            <form method="post" id="session-form">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <div id="map-container" class="mb-3" style="display:none;">
+                    <label class="form-label">{% trans "Select Location on Map" %}</label>
+                    <div id="map" data-lat="10.4806" data-lng="-66.9036" data-zoom="13" style="height: 300px;"></div>
+                    <small class="text-muted">{% trans "Click on the map to set your session location." %}</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-send me-2"></i>{% trans "Submit Request" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modeField = document.getElementById('id_mode');
+    const mapContainer = document.getElementById('map-container');
+
+    if (modeField) {
+        modeField.addEventListener('change', function() {
+            mapContainer.style.display = this.value === 'in_person' ? 'block' : 'none';
+            if (this.value === 'in_person' && window.tutoringMap) {
+                window.tutoringMap.invalidateSize();
+            }
+        });
+    }
+
+    // Click on map to set location
+    if (window.tutoringMap) {
+        let marker = null;
+        window.tutoringMap.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            document.getElementById('id_latitude').value = lat;
+            document.getElementById('id_longitude').value = lng;
+            if (marker) marker.remove();
+            marker = L.marker([lat, lng]).addTo(window.tutoringMap);
+        });
+    }
+});
+</script>
+{% endblock %}

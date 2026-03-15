@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+
+{% block title %}{% trans "Edit Profile" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4">{% trans "Edit Profile" %}</h1>
+
+        <div class="card p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h4 class="mb-3">{% trans "General Information" %}</h4>
+                {{ profile_form|crispy }}
+
+                {% if type_form %}
+                <hr>
+                <h4 class="mb-3">
+                    {% if profile.user_type == 'tutor' %}{% trans "Tutor Details" %}
+                    {% elif profile.user_type == 'student' %}{% trans "Student Details" %}
+                    {% elif profile.user_type == 'institute' %}{% trans "Institute Details" %}
+                    {% endif %}
+                </h4>
+                {{ type_form|crispy }}
+                {% endif %}
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-2"></i>{% trans "Save Changes" %}
+                    </button>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary ms-2">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

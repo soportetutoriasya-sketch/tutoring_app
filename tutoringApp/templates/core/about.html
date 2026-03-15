@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "About" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4">{% trans "About TutoringApp" %}</h1>
+        <div class="card p-4 mb-4">
+            <p class="lead">{% trans "TutoringApp connects students with qualified tutors based on location, subject expertise, and availability." %}</p>
+            <p>{% trans "Whether you need help with math, science, languages, or any other subject, our platform makes it easy to find the perfect tutor near you for in-person sessions, or anywhere in the world for online classes." %}</p>
+        </div>
+        <h3 class="mb-3">{% trans "Our Mission" %}</h3>
+        <div class="card p-4">
+            <p>{% trans "We believe every student deserves access to quality education. Our mission is to make personalized tutoring accessible and affordable by connecting students directly with experienced tutors in their area." %}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

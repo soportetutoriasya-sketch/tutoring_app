@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Admin Dashboard" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-shield-lock me-2"></i>{% trans "Admin Dashboard" %}</h1>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">{% trans "Total Users" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ total_tutors }}</div>
+            <div class="stat-label">{% trans "Tutors" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ total_sessions }}</div>
+            <div class="stat-label">{% trans "Sessions" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ total_subjects }}</div>
+            <div class="stat-label">{% trans "Subjects" %}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Registrations -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">{% trans "Recent Registrations" %}</h5></div>
+            <div class="card-body">
+                {% if recent_users %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr><th>{% trans "User" %}</th><th>{% trans "Type" %}</th><th>{% trans "Joined" %}</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for u in recent_users %}
+                            <tr>
+                                <td>{{ u.user.get_full_name|default:u.user.username }}</td>
+                                <td><span class="badge bg-secondary">{{ u.get_user_type_display }}</span></td>
+                                <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">{% trans "No recent registrations." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor List -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">{% trans "Tutors" %}</h5></div>
+            <div class="card-body">
+                {% if tutors %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr><th>{% trans "Name" %}</th><th>{% trans "Verified" %}</th><th>{% trans "Subjects" %}</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for tutor in tutors %}
+                            <tr>
+                                <td>{{ tutor.profile.user.get_full_name|default:tutor.profile.user.username }}</td>
+                                <td>{% if tutor.is_verified %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle text-danger"></i>{% endif %}</td>
+                                <td>
+                                    {% for s in tutor.subjects.all %}
+                                    <span class="badge bg-info">{{ s.name }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">{% trans "No tutors registered." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Links -->
+<div class="card mt-4">
+    <div class="card-header"><h5 class="mb-0">{% trans "Reports & Exports" %}</h5></div>
+    <div class="card-body">
+        <a href="{% url 'reports:admin_export_csv' %}" class="btn btn-outline-success me-2">
+            <i class="bi bi-filetype-csv me-2"></i>{% trans "Export Sessions CSV" %}
+        </a>
+        <a href="{% url 'reports:admin_export_pdf' %}" class="btn btn-outline-danger">
+            <i class="bi bi-filetype-pdf me-2"></i>{% trans "Export Sessions PDF" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

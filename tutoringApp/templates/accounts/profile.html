@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{% trans "My Profile" %}</h1>
+            <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i>{% trans "Edit Profile" %}
+            </a>
+        </div>
+
+        <div class="card p-4">
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" class="rounded-circle img-fluid" style="max-width: 200px;" alt="{% trans 'Profile Picture' %}">
+                    {% else %}
+                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                        <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h3>{{ profile.user_firstname }} {{ profile.user_lastname }}</h3>
+                    <p class="text-muted">{{ profile.user.email }}</p>
+                    <span class="badge bg-primary mb-3">{{ profile.get_user_type_display }}</span>
+
+                    <table class="table">
+                        <tr><th>{% trans "Phone" %}</th><td>{{ profile.phone_number|default:"-" }}</td></tr>
+                        <tr><th>{% trans "Address" %}</th><td>{{ profile.address|default:"-" }}</td></tr>
+                        <tr><th>{% trans "ID" %}</th><td>{{ profile.user_cedulaid|default:"-" }}</td></tr>
+                        <tr><th>{% trans "Bio" %}</th><td>{{ profile.bio|default:"-" }}</td></tr>
+                        <tr><th>{% trans "Member Since" %}</th><td>{{ profile.date_joined|date:"N j, Y" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if profile.user_type == 'tutor' and tutor_profile %}
+        <div class="card p-4 mt-4">
+            <h4>{% trans "Tutor Details" %}</h4>
+            <table class="table">
+                <tr>
+                    <th>{% trans "Subjects" %}</th>
+                    <td>
+                        {% for subject in tutor_profile.subjects.all %}
+                        <span class="badge bg-info me-1">{{ subject.name }}</span>
+                        {% empty %}
+                        -
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><th>{% trans "Verified" %}</th><td>{% if tutor_profile.is_verified %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle text-danger"></i>{% endif %}</td></tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if profile.user_type == 'student' and student_profile %}
+        <div class="card p-4 mt-4">
+            <h4>{% trans "Student Details" %}</h4>
+            <table class="table">
+                <tr><th>{% trans "Grade Level" %}</th><td>{{ student_profile.grade_level|default:"-" }}</td></tr>
+                <tr><th>{% trans "Interests" %}</th><td>{{ student_profile.interests|default:"-" }}</td></tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

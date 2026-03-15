@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Tutor Dashboard" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-speedometer2 me-2"></i>{% trans "Tutor Dashboard" %}</h1>
+    <a href="{% url 'services:available_requests' %}" class="btn btn-primary">
+        <i class="bi bi-search me-2"></i>{% trans "View Available Requests" %}
+    </a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ upcoming_sessions|length }}</div>
+            <div class="stat-label">{% trans "Upcoming" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ past_sessions|length }}</div>
+            <div class="stat-label">{% trans "Completed" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{{ reviews|length }}</div>
+            <div class="stat-label">{% trans "Reviews" %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="stat-number">{% if avg_rating %}{{ avg_rating|floatformat:1 }}{% else %}-{% endif %}</div>
+            <div class="stat-label">{% trans "Avg Rating" %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Sessions -->
+<div class="card mb-4">
+    <div class="card-header"><h5 class="mb-0">{% trans "Upcoming Sessions" %}</h5></div>
+    <div class="card-body">
+        {% if upcoming_sessions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Subject" %}</th>
+                        <th>{% trans "Student" %}</th>
+                        <th>{% trans "Date/Time" %}</th>
+                        <th>{% trans "Mode" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in upcoming_sessions %}
+                    <tr>
+                        <td>{{ session.subject.name }}</td>
+                        <td>{{ session.student.get_full_name }}</td>
+                        <td>{{ session.requested_datetime|date:"M d, Y H:i" }}</td>
+                        <td><span class="badge bg-info">{{ session.get_mode_display }}</span></td>
+                        <td>
+                            {% if session.mode == 'online' and session.meeting_link %}
+                            <a href="{{ session.meeting_link }}" target="_blank" class="btn btn-sm btn-success">{% trans "Join" %}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">{% trans "No upcoming sessions." %}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Past Sessions -->
+<div class="card mb-4">
+    <div class="card-header"><h5 class="mb-0">{% trans "Past Sessions" %}</h5></div>
+    <div class="card-body">
+        {% if past_sessions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Subject" %}</th>
+                        <th>{% trans "Student" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Review" %}</th>
+                        <th>{% trans "Report" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in past_sessions %}
+                    <tr>
+                        <td>{{ session.subject.name }}</td>
+                        <td>{{ session.student.get_full_name }}</td>
+                        <td>{{ session.requested_datetime|date:"M d, Y" }}</td>
+                        <td>
+                            {% if session.review %}
+                            <span class="rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= session.review.rating %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                    <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if session.tutor_reports.exists %}
+                            <a href="{% url 'reports:view_report' session.tutor_reports.first.id %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+                            {% else %}
+                            <a href="{% url 'reports:tutor_write_report' session.id %}" class="btn btn-sm btn-outline-success">{% trans "Write Report" %}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">{% trans "No past sessions yet." %}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Reviews -->
+<div class="card">
+    <div class="card-header"><h5 class="mb-0">{% trans "Recent Reviews" %}</h5></div>
+    <div class="card-body">
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between">
+                <strong>{{ review.session.student.get_full_name }}</strong>
+                <span class="rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                        <i class="bi bi-star-fill"></i>
+                        {% else %}
+                        <i class="bi bi-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            <small class="text-muted">{{ review.session.subject.name }} - {{ review.created_at|date:"M d, Y" }}</small>
+            <p class="mt-2 mb-0">{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-muted text-center">{% trans "No reviews yet." %}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

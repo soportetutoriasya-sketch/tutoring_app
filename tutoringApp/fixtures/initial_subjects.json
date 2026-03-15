@@ -1,0 +1,10 @@
+[
+    {
+        "model": "services.subject",
+        "pk": 1,
+        "fields": {
+            "name": "Math",
+            "description": "Mathematics tutoring including algebra, calculus, geometry, and more."
+        }
+    }
+]

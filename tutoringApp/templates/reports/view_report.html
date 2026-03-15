@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Session Report" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-file-earmark-text me-2"></i>{% trans "Session Report" %}</h1>
+            <button onclick="window.print()" class="btn btn-outline-secondary no-print">
+                <i class="bi bi-printer me-2"></i>{% trans "Print" %}
+            </button>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h4 class="mb-3">{% trans "Session Information" %}</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>{% trans "Student" %}:</strong> {{ report.session.student.get_full_name }}</p>
+                    <p><strong>{% trans "Tutor" %}:</strong> {{ report.session.tutor.get_full_name }}</p>
+                    <p><strong>{% trans "Subject" %}:</strong> {{ report.session.subject.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>{% trans "Date" %}:</strong> {{ report.session.requested_datetime|date:"M d, Y" }}</p>
+                    {% if report.start_time %}<p><strong>{% trans "Start Time" %}:</strong> {{ report.start_time|time:"H:i" }}</p>{% endif %}
+                    {% if report.end_time %}<p><strong>{% trans "End Time" %}:</strong> {{ report.end_time|time:"H:i" }}</p>{% endif %}
+                    {% if report.location %}<p><strong>{% trans "Location" %}:</strong> {{ report.location }}</p>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h4 class="mb-3">{% trans "Report" %}</h4>
+            <div class="mb-3">
+                <h6>{% trans "Summary" %}</h6>
+                <p>{{ report.report_text }}</p>
+            </div>
+
+            {% if report.topics_covered %}
+            <div class="mb-3">
+                <h6>{% trans "Topics Covered" %}</h6>
+                <ul>
+                    {% for topic in report.topics_covered %}
+                    <li>{{ topic }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if report.student_progress_rating %}
+            <div class="mb-3">
+                <h6>{% trans "Student Progress" %}</h6>
+                <span class="rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= report.student_progress_rating %}
+                        <i class="bi bi-star-fill"></i>
+                        {% else %}
+                        <i class="bi bi-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                {% if report.student_progress_comments %}
+                <p class="mt-2">{{ report.student_progress_comments }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if report.strengths %}
+            <div class="mb-3">
+                <h6>{% trans "Strengths" %}</h6>
+                <p>{{ report.strengths }}</p>
+            </div>
+            {% endif %}
+
+            {% if report.areas_for_improvement %}
+            <div class="mb-3">
+                <h6>{% trans "Areas for Improvement" %}</h6>
+                <p>{{ report.areas_for_improvement }}</p>
+            </div>
+            {% endif %}
+
+            {% if report.homework_assigned %}
+            <div class="mb-3">
+                <h6>{% trans "Homework Assigned" %}</h6>
+                <p>{{ report.homework_assigned }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <p class="text-muted text-center"><small>{% trans "Report created on" %} {{ report.created_at|date:"M d, Y H:i" }}</small></p>
+    </div>
+</div>
+{% endblock %}

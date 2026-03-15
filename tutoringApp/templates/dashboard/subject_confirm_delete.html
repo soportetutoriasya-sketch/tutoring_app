@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Subject" %} - TutoringApp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card p-4">
+            <h2 class="mb-4">{% trans "Delete Subject" %}</h2>
+            <p>{% blocktrans with name=subject.name %}Are you sure you want to delete "<strong>{{ name }}</strong>"?{% endblocktrans %}</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                </button>
+                <a href="{% url 'dashboard:content_admin' %}" class="btn btn-outline-secondary ms-2">{% trans "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

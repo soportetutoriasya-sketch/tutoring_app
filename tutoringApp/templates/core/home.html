@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "TutoringApp - Find Your Perfect Tutor" %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center rounded-3 mb-5">
+    <div class="container">
+        <h1>{% trans "Find the Perfect Tutor Near You" %}</h1>
+        <p class="lead mb-4">{% trans "Connect with qualified tutors for personalized learning, online or in person." %}</p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg me-2">
+            <i class="bi bi-person-plus me-2"></i>{% trans "Get Started" %}
+        </a>
+        <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Login" %}
+        </a>
+        {% else %}
+        <a href="{% url 'services:request_session' %}" class="btn btn-light btn-lg">
+            <i class="bi bi-search me-2"></i>{% trans "Find a Tutor" %}
+        </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="mb-5">
+    <h2 class="text-center mb-4"><i class="bi bi-geo-alt me-2"></i>{% trans "Tutors Near You" %}</h2>
+    <div id="map" data-lat="10.4806" data-lng="-66.9036" data-zoom="13"></div>
+    {% if tutors_data %}
+    <script id="tutors-data" type="application/json">{{ tutors_data|safe }}</script>
+    {% endif %}
+</section>
+
+<!-- Featured Subjects -->
+<section class="mb-5">
+    <h2 class="text-center mb-4"><i class="bi bi-book me-2"></i>{% trans "Featured Subjects" %}</h2>
+    <div class="row g-4 justify-content-center">
+        {% for subject in subjects %}
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="bi bi-journal-text display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">{{ subject.name }}</h5>
+                    <p class="card-text text-muted">{{ subject.description|default:"Find expert tutors for this subject." }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            <p>{% trans "No subjects available yet." %}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="mb-5">
+    <h2 class="text-center mb-4">{% trans "How It Works" %}</h2>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <i class="bi bi-search display-3 text-primary mb-3"></i>
+                <h5>{% trans "1. Search" %}</h5>
+                <p class="text-muted">{% trans "Browse available tutors by subject and location." %}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <i class="bi bi-calendar-check display-3 text-primary mb-3"></i>
+                <h5>{% trans "2. Book" %}</h5>
+                <p class="text-muted">{% trans "Request a session that fits your schedule." %}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4">
+                <i class="bi bi-star display-3 text-primary mb-3"></i>
+                <h5>{% trans "3. Learn" %}</h5>
+                <p class="text-muted">{% trans "Meet your tutor and achieve your learning goals." %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
